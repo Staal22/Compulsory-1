@@ -1,5 +1,5 @@
 #include <iostream>
-#include<windows.h>
+#include<windows.h>                             //for Sleep() function, but only works on windows sadly
 
 void clearCin();
 void turn();
@@ -42,7 +42,7 @@ int main()
         std::cout << "Player 2 wins!! \n";      //technically speaking the game is a solved draw,
     }                                           //but this outcome is the least likely, so player 2 gets an extra exclamation point for winning
     else
-        std::cout << "It's a draw...\n";        //boo
+        std::cout << "It's a draw...\n";
 }
 
 
@@ -69,10 +69,11 @@ int getRandomNumber(double min, double max)
 }
 
 
-void turn()
-{                                              //gets input, puts symbol corresponding to player turn in corresponding field (assuming conditions are met), or asks player to go again
+void turn()                                    //gets input, puts symbol corresponding to player turn in corresponding field (assuming conditions are met), or asks player to go again
+{                                              
     std::cout << "Input 0 to have the AI do a move for you! or\n";
-                                               //this is still playing against the AI, you just have to input 0 every other turn, a bit clunky but less code-rewriting required from me haha
+                                               //just press 0 every other turn to play against AI
+
     std::cout << "Player " << player << " input a number from 1 to 9 to place your " << symbol << " : ";
 
     std::cin >> input;
@@ -126,7 +127,7 @@ void turn()
         turn();
     }
 
-
+                                                //change to X/O is field is empty, and swap player and symbol for next turn
     if (player == 1 && table[x][y] != 'X' && table[x][y] != 'O') {
         table[x][y] = 'X';
         player = 2;
@@ -151,14 +152,14 @@ void turn()
 }
 
 
-bool gameover()
-{                               //gets called once after every turn to check if a wincon/draw has been reached, and if so returns gameover == true
+bool gameover()                                 //gets called once after every turn to check if a wincon/draw has been reached, and if so returns gameover == true
+{
 
-    for (int i = 0; i < 3; i++)                 //checks for the 6 possible straight line wins
+    for (int i = 0; i < 3; i++)                 //checks for the six possible straight line wins
         if (table[i][0] == table[i][1] && table[i][0] == table[i][2] || table[0][i] == table[1][i] && table[0][i] == table[2][i])
             return true;
-
-    if (table[0][0] == table[1][1] && table[0][0] == table[2][2] || table[0][2] == table[1][1] && table[0][2] == table[2][0]) //cheks for the two possible diagonal wins
+                                                //cheks for the two possible diagonal wins
+    if (table[0][0] == table[1][1] && table[0][0] == table[2][2] || table[0][2] == table[1][1] && table[0][2] == table[2][0])
         return true;
 
     for (int i = 0; i < 3; i++)                 //if there are still empty squares, and no wincon has been reached, keep going
@@ -170,7 +171,7 @@ bool gameover()
     return true;
 }
 
-void clearCin()                                //a must to stop the program from looping if user enters something other than an integer as input
+void clearCin()                                //this is a must to stop the program from looping if the user enters something other than an integer as input
 {
     std::cin.clear();
     std::cin.ignore(32767, '\n');
