@@ -1,6 +1,7 @@
 #include <iostream>
 #include<windows.h>                             //for Sleep() function, but only works on windows sadly
 
+
 void clearCin();
 void turn();
 void draw_board();
@@ -13,6 +14,7 @@ bool draw = false;
 
 int x = 1;
 int y = 1;
+int moves{};
 
 int player = 1;
 char symbol = 'X';
@@ -69,8 +71,133 @@ int getRandomNumber(double min, double max)
 }
 
 
+
+bool gameover()                                 //gets called once after every turn to check if a wincon/draw has been reached, and if so returns gameover == true
+{
+
+    for (int i = 0; i < 3; i++)                 //checks for the six possible straight line wins
+        if (table[i][0] == table[i][1] && table[i][0] == table[i][2] || table[0][i] == table[1][i] && table[0][i] == table[2][i])
+            return true;
+                                                //cheks for the two possible diagonal wins
+    if (table[0][0] == table[1][1] && table[0][0] == table[2][2] || table[0][2] == table[1][1] && table[0][2] == table[2][0])
+        return true;
+
+    for (int i = 0; i < 3; i++)                 //if there are still empty squares, and no wincon has been reached, keep going
+        for (int j = 0; j < 3; j++)
+            if (table[i][j] != 'X' && table[i][j] != 'O')
+                return false;
+
+    draw = true;                                //(else) if all squares are taken, the game is a draw
+    return true;
+}
+
+//int score() {
+//    if (gameover() == true && player == 1 && draw == false) {
+//        return -10;
+//    }
+//    else if (gameover() == true && player == 2 && draw == false) {
+//        return 10;
+//    }
+//    else if (gameover() == true && draw == true) {
+//        return 0;
+//    }
+//
+//}
+//
+//int minimax(char table[row][col], int depth, bool isAI) {
+//    int score = 0;
+//    int bestScore = 0;
+//    if (gameover() == true)
+//    {
+//        if (isAI == true)
+//            return -1;
+//        if (isAI == false)
+//            return +1;
+//    }
+//    else
+//    {
+//        if (depth < 9)
+//        {
+//            if (isAI == true)
+//            {
+//                bestScore = -999;
+//                for (int i = 0; i < row; i++)
+//                {
+//                    for (int j = 0; j < col; j++)
+//                    {
+//                        if (table[i][j] == ' ')
+//                        {
+//                            table[i][j] = symbol;
+//                            score = minimax(table, depth + 1, false);
+//                            table[i][j] = ' ';
+//                            if (score > bestScore)
+//                            {
+//                                bestScore = score;
+//                            }
+//                        }
+//                    }
+//                }
+//                return bestScore;
+//            }
+//            else
+//            {
+//                bestScore = 999;
+//                for (int i = 0; i < row; i++)
+//                {
+//                    for (int j = 0; j < col; j++)
+//                    {
+//                        if (table[i][j] == ' ')
+//                        {
+//                            table[i][j] = symbol;
+//                            score = minimax(table, depth + 1, true);
+//                            table[i][j] = ' ';
+//                            if (score < bestScore)
+//                            {
+//                                bestScore = score;
+//                            }
+//                        }
+//                    }
+//                }
+//                return bestScore;
+//            }
+//        }
+//        else
+//        {
+//            return 0;
+//        }
+//    }
+//}
+//
+//int bestMove(char table[row][col], int moves)
+//{
+//    int x = -1, y = -1;
+//    int score = 0, bestScore = -999;
+//    for (int i = 0; i < row; i++)
+//    {
+//        for (int j = 0; j < col; j++)
+//        {
+//            if (table[i][j] == ' ')
+//            {
+//                table[i][j] = symbol;
+//                score = minimax(table, moves + 1, false);
+//                table[i][j] = ' ';
+//                if (score > bestScore)
+//                {
+//                    bestScore = score;
+//                    x = i;
+//                    y = j;
+//                }
+//            }
+//        }
+//    }
+//    return x * 3 + y;
+//}
+
+
 void turn()                                    //gets input, puts symbol corresponding to player turn in corresponding field (assuming conditions are met), or asks player to go again
-{                                              
+{
+    moves = 0;
+
     std::cout << "Input 0 to have the AI do a move for you! or\n";
                                                //just press 0 every other turn to play against AI
 
@@ -78,47 +205,63 @@ void turn()                                    //gets input, puts symbol corresp
 
     std::cin >> input;
 
+    int n{};
+
     switch (input) {
     case 0:
-        ai:
+    ai:
+        //n = bestMove(table, moves);
+        //x = n / row;
+        //y = n % col;
+
         x = getRandomNumber(0, 2);             //yes, the "AI" is just playing a random move :P
         y = getRandomNumber(0, 2);
+        moves++;
         break;
     case 1:
         x = 0;
         y = 0;
+        moves++;
         break;
     case 2:
         x = 0;
         y = 1;
+        moves++;
         break;
     case 3:
         x = 0;
         y = 2;
+        moves++;
         break;
     case 4:
         x = 1;
         y = 0;
+        moves++;
         break;
     case 5:
         x = 1;
         y = 1;
+        moves++;
         break;
     case 6:
         x = 1;
         y = 2;
+        moves++;
         break;
     case 7:
         x = 2;
         y = 0;
+        moves++;
         break;
     case 8:
         x = 2;
         y = 1;
+        moves++;
         break;
     case 9:
         x = 2;
         y = 2;
+        moves++;
         break;
     default:
         std::cout << "Invalid input, please try again\n";
@@ -127,7 +270,7 @@ void turn()                                    //gets input, puts symbol corresp
         turn();
     }
 
-                                                //change to X/O is field is empty, and swap player and symbol for next turn
+    //change to X/O is field is empty, and swap player and symbol for next turn
     if (player == 1 && table[x][y] != 'X' && table[x][y] != 'O') {
         table[x][y] = 'X';
         player = 2;
@@ -149,26 +292,6 @@ void turn()                                    //gets input, puts symbol corresp
 
     draw_board();                               //call this again to show the move that was just done before next turn
 
-}
-
-
-bool gameover()                                 //gets called once after every turn to check if a wincon/draw has been reached, and if so returns gameover == true
-{
-
-    for (int i = 0; i < 3; i++)                 //checks for the six possible straight line wins
-        if (table[i][0] == table[i][1] && table[i][0] == table[i][2] || table[0][i] == table[1][i] && table[0][i] == table[2][i])
-            return true;
-                                                //cheks for the two possible diagonal wins
-    if (table[0][0] == table[1][1] && table[0][0] == table[2][2] || table[0][2] == table[1][1] && table[0][2] == table[2][0])
-        return true;
-
-    for (int i = 0; i < 3; i++)                 //if there are still empty squares, and no wincon has been reached, keep going
-        for (int j = 0; j < 3; j++)
-            if (table[i][j] != 'X' && table[i][j] != 'O')
-                return false;
-
-    draw = true;                                //(else) if all squares are taken, the game is a draw
-    return true;
 }
 
 void clearCin()                                //this is a must to stop the program from looping if the user enters something other than an integer as input
