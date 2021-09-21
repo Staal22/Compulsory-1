@@ -17,6 +17,7 @@ int y = 1;
 int moves{};
 
 int player = 1;
+
 char symbol = 'X';
 
 int input{};
@@ -24,14 +25,15 @@ int input{};
 std::string line = " ---   ---   ---\n";
 
 char table[row][col] = {                        //i would ideally like these to be empty or the same value (looks nicer)
-{'1', '2', '3'},                                //but that makes it a pain to check for wincon so I'm not gonna bother
-{'4', '5', '6'},                                //i could use the same method i already use and just ignore: ' '  but that would require a lot of extra unneccesary lines
-{'7', '8', '9'}
+{' ', ' ', ' '},                                //but that makes it a pain to check for wincon so I'm not gonna bother
+{' ', ' ', ' '},                                //i could use the same method i already use and just ignore: ' '  but that would require a lot of extra unneccesary lines
+{' ', ' ', ' '}
 };
 
 
 int main()
 {
+    moves = 0;
     while (gameover() == false) {               //keeps the game going as long as gameover() returns false, meaning no wincon or draw has been reached
         draw_board();
         turn();
@@ -47,6 +49,14 @@ int main()
         std::cout << "It's a draw...\n";
 }
 
+char playersymbol(char symbol) {
+    if (symbol == 'X')
+        symbol = 'O';
+    else if (symbol == 'O')
+        symbol = 'X';
+
+    return symbol;
+}
 
 void draw_board()                               //prints the board
 {
@@ -71,133 +81,116 @@ int getRandomNumber(double min, double max)
 }
 
 
-
 bool gameover()                                 //gets called once after every turn to check if a wincon/draw has been reached, and if so returns gameover == true
 {
 
     for (int i = 0; i < 3; i++)                 //checks for the six possible straight line wins
-        if (table[i][0] == table[i][1] && table[i][0] == table[i][2] || table[0][i] == table[1][i] && table[0][i] == table[2][i])
+        if (table[i][0] == table[i][1] && table[i][0] == table[i][2] && table[i][0] != ' ' || table[0][i] == table[1][i] && table[0][i] == table[2][i] && table[0][i] != ' ')
             return true;
                                                 //cheks for the two possible diagonal wins
-    if (table[0][0] == table[1][1] && table[0][0] == table[2][2] || table[0][2] == table[1][1] && table[0][2] == table[2][0])
+    if (table[0][0] == table[1][1] && table[0][0] == table[2][2] && table[0][0] != ' ' || table[0][2] == table[1][1] && table[0][2] == table[2][0] && table[0][2] != ' ')
         return true;
 
-    for (int i = 0; i < 3; i++)                 //if there are still empty squares, and no wincon has been reached, keep going
-        for (int j = 0; j < 3; j++)
-            if (table[i][j] != 'X' && table[i][j] != 'O')
-                return false;
+    if (moves < (row * col))                      //no wincon and less than nine moves means game isnt finished
+        return false;
 
-    draw = true;                                //(else) if all squares are taken, the game is a draw
+    draw = true;                                //(else) if all squares are taken and no wincon, the game is a draw
     return true;
+
 }
 
-//int score() {
-//    if (gameover() == true && player == 1 && draw == false) {
-//        return -10;
-//    }
-//    else if (gameover() == true && player == 2 && draw == false) {
-//        return 10;
-//    }
-//    else if (gameover() == true && draw == true) {
-//        return 0;
-//    }
-//
-//}
-//
-//int minimax(char table[row][col], int depth, bool isAI) {
-//    int score = 0;
-//    int bestScore = 0;
-//    if (gameover() == true)
-//    {
-//        if (isAI == true)
-//            return -1;
-//        if (isAI == false)
-//            return +1;
-//    }
-//    else
-//    {
-//        if (depth < 9)
-//        {
-//            if (isAI == true)
-//            {
-//                bestScore = -999;
-//                for (int i = 0; i < row; i++)
-//                {
-//                    for (int j = 0; j < col; j++)
-//                    {
-//                        if (table[i][j] == ' ')
-//                        {
-//                            table[i][j] = symbol;
-//                            score = minimax(table, depth + 1, false);
-//                            table[i][j] = ' ';
-//                            if (score > bestScore)
-//                            {
-//                                bestScore = score;
-//                            }
-//                        }
-//                    }
-//                }
-//                return bestScore;
-//            }
-//            else
-//            {
-//                bestScore = 999;
-//                for (int i = 0; i < row; i++)
-//                {
-//                    for (int j = 0; j < col; j++)
-//                    {
-//                        if (table[i][j] == ' ')
-//                        {
-//                            table[i][j] = symbol;
-//                            score = minimax(table, depth + 1, true);
-//                            table[i][j] = ' ';
-//                            if (score < bestScore)
-//                            {
-//                                bestScore = score;
-//                            }
-//                        }
-//                    }
-//                }
-//                return bestScore;
-//            }
-//        }
-//        else
-//        {
-//            return 0;
-//        }
-//    }
-//}
-//
-//int bestMove(char table[row][col], int moves)
-//{
-//    int x = -1, y = -1;
-//    int score = 0, bestScore = -999;
-//    for (int i = 0; i < row; i++)
-//    {
-//        for (int j = 0; j < col; j++)
-//        {
-//            if (table[i][j] == ' ')
-//            {
-//                table[i][j] = symbol;
-//                score = minimax(table, moves + 1, false);
-//                table[i][j] = ' ';
-//                if (score > bestScore)
-//                {
-//                    bestScore = score;
-//                    x = i;
-//                    y = j;
-//                }
-//            }
-//        }
-//    }
-//    return x * 3 + y;
-//}
+int minimax(char table[row][col], int depth, bool isAI) {
+    int score = 0;
+    int bestScore = 0;
+    if (gameover() == true)
+    {
+        if (isAI == true)
+            return -1;
+        if (isAI == false)
+            return +1;
+    }
+    else
+    {
+        if (depth < 9)
+        {
+            if (isAI == true)
+            {
+                bestScore = -999;
+                for (int i = 0; i < row; i++)
+                {
+                    for (int j = 0; j < col; j++)
+                    {
+                        if (table[i][j] == ' ')
+                        {
+                            table[i][j] = symbol;//simulates current move    
+                            score = minimax(table, depth + 1, false);
+                            table[i][j] = ' ';
+                            if (score > bestScore)
+                            {
+                                bestScore = score;
+                            }
+                        }
+                    }
+                }
+                return bestScore;
+            }
+            else
+            {
+                bestScore = 999;
+                for (int i = 0; i < row; i++)
+                {
+                    for (int j = 0; j < col; j++)
+                    {
+                        if (table[i][j] == ' ')
+                        {
+                            table[i][j] = playersymbol(symbol);//imagines opponent answer, now as the opposite symbol
+                            score = minimax(table, depth + 1, true);
+                            table[i][j] = ' ';
+                            if (score < bestScore)
+                            {
+                                bestScore = score;
+                            }
+                        }
+                    }
+                }
+                return bestScore;
+            }
+        }
+        else
+        {
+            return 0;
+        }
+    }
+}
+
+int bestMove(char table[row][col], int moves)
+{
+    int x = -1, y = -1;
+    int score = 0, bestScore = -999;
+    for (int i = 0; i < row; i++)
+    {
+        for (int j = 0; j < col; j++)
+        {
+            if (table[i][j] == ' ')
+            {
+                table[i][j] = symbol;
+                score = minimax(table, moves + 1, false);
+                table[i][j] = ' ';
+                if (score > bestScore)
+                {
+                    bestScore = score;
+                    x = i;
+                    y = j;
+                }
+            }
+        }
+    }
+    return x * 3 + y;
+}
 
 
 void turn()                                    //gets input, puts symbol corresponding to player turn in corresponding field (assuming conditions are met), or asks player to go again
 {
-    moves = 0;
-
     std::cout << "Input 0 to have the AI do a move for you! or\n";
                                                //just press 0 every other turn to play against AI
 
@@ -210,12 +203,12 @@ void turn()                                    //gets input, puts symbol corresp
     switch (input) {
     case 0:
     ai:
-        //n = bestMove(table, moves);
-        //x = n / row;
-        //y = n % col;
+        n = bestMove(table, moves);
+        x = n / row;
+        y = n % col;
 
-        x = getRandomNumber(0, 2);             //yes, the "AI" is just playing a random move :P
-        y = getRandomNumber(0, 2);
+        //x = getRandomNumber(0, 2);             //yes, the "AI" is just playing a random move :P
+        //y = getRandomNumber(0, 2);
         moves++;
         break;
     case 1:
@@ -270,21 +263,23 @@ void turn()                                    //gets input, puts symbol corresp
         turn();
     }
 
-    //change to X/O is field is empty, and swap player and symbol for next turn
-    if (player == 1 && table[x][y] != 'X' && table[x][y] != 'O') {
+                                                //change to X/O is field is empty, and swap player and symbol for next turn
+    if (player == 1 && table[x][y] == ' ') {
         table[x][y] = 'X';
         player = 2;
-        symbol = 'O';
+        symbol = playersymbol(symbol);
+        //symbol = 'O';
     }
-    else if (player == 2 && table[x][y] != 'X' && table[x][y] != 'O') {
+    else if (player == 2 && table[x][y] == ' ') {
         table[x][y] = 'O';
         player = 1;
-        symbol = 'X';
+        symbol = playersymbol(symbol);
+        //symbol = 'X';
     }
     else {
-        if (input == 0) {                       //prevents the AI from inputting into an already taken field
-            goto ai;
-        }
+        //if (input == 0) {                       //prevents the AI from inputting into an already taken field
+        //    goto ai;
+        //}
         std::cout << "Field is already taken, try again\n";
         Sleep(1500);
         turn();
