@@ -117,9 +117,6 @@ int minimax(char table[row][col], int depth, bool isAI) {  //the boolean value i
                         if (table[i][j] == ' ')  //for all currently available moves (empty squares)
                         {
                             table[i][j] = symbol;//simulates current move for itself
-                                    
-//side note: if the order goes AI -> Player and then AI more than once in a row it seems to mess up the AI might have something to do with line above not calling playersymbol(), not sure
-
                             score = minimax(table, depth + 1, false);//set isAI to false as next move will be for opponent
                             table[i][j] = ' ';   //cleans up after itself (the move it imagines is never printed, just used to check for winning (or more accurately losing) lines)
                             if (score > bestScore)
@@ -198,7 +195,7 @@ void turn()   //gets input, puts symbol corresponding to player turn in correspo
     std::pair<int, int> bestmoves;
 
     switch (input) {
-    case 0:
+    case 0:  //Like this, you can play against the AI as either X or O, just choose to start or let the AI start, and press 0 every other move
         bestmoves = bestMove(table, moves); //call bestMove to get a pair
         x = bestmoves.first;  //set x = first pair value
         y = bestmoves.second; //set y = second pair value
