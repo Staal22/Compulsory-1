@@ -106,7 +106,7 @@ int minimax(char table[row][col], int depth, bool isAI) {  //the boolean value i
     else
     {
         if (depth < 9)       //every time AI simulates a move depth increases by 1, this tells the algorithm how deep into the possibility tree it currently is,
-        {                    //but we don't need to go deeper than 9 levels to solve tic tac toe
+        {                    //but we don't need to go deeper than 8 levels to solve tic tac toe
             if (isAI == true)
             {
                 bestScore = -999;
@@ -185,7 +185,7 @@ std::pair<int, int> bestMove(char table[row][col], int moves) //function that wi
 
 void turn()   //gets input, puts symbol corresponding to player turn in corresponding field (assuming conditions are met), or asks player to go again
 {
-    std::cout << "Input 0 to have the AI do a move for you! or\n";  //just press 0 every other turn to play against AI
+    std::cout << "Input 0 for the AI to make a move! or\n";
                 
 
     std::cout << "Player " << player << " input a number from 1 to 9 to place your " << symbol << " : ";
