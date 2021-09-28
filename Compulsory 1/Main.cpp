@@ -19,6 +19,7 @@ int moves{};
 int player = 1;
 
 char symbol = 'X';
+char goAgain = 'y';
 
 int input{};
 
@@ -33,12 +34,19 @@ char table[row][col] = {
 
 int main()
 {
+    while (goAgain == 'y') {
     moves = 0;
-    while (gameover() == false) {        //keeps the game going as long as gameover() returns false, meaning no wincon or draw has been reached
-        draw_board();
-        turn();
-        gameover();
+    draw = false;
+    for (int i = 0; i < row; i++) {
+        for (int j = 0; j < col; j++) {
+            table[i][j] = ' ';
+        }
     }
+        while (gameover() == false) {        //keeps the game going as long as gameover() returns false, meaning no wincon or draw has been reached
+            draw_board();
+            turn();
+            gameover();
+        }
     if (player == 2 && draw == false) {         //when gameover returns true it goes to check who won or if it was a draw,
         std::cout << "Player 1 wins! \n";       //1 and 2 are switched here, it's because i switch the player after every move and idk I'm too lazy to fix
     }
@@ -47,6 +55,9 @@ int main()
     }                                           //but this outcome is the least likely, so player 2 gets an extra exclamation point for winning
     else
         std::cout << "It's a draw...\n";
+    std::cout << "Do you want to go again? (y/n)?";
+    std::cin >> goAgain;
+    }
 }
 
 char playersymbol(char symbol) {   //gets called once every turn to swap what symbol is being placed, but also inside the AI algorithm;,
@@ -76,7 +87,6 @@ void draw_board()    //prints the board
 
 bool gameover()    //gets called once after every turn to check if a wincon/draw has been reached, and if so returns gameover == true
 {
-
     for (int i = 0; i < 3; i++)                 //checks for the six possible straight line wins
         if (table[i][0] == table[i][1] && table[i][0] == table[i][2] && table[i][0] != ' ' || table[0][i] == table[1][i] && table[0][i] == table[2][i] && table[0][i] != ' ')
             return true;
@@ -238,6 +248,7 @@ void turn()   //gets input, puts symbol corresponding to player turn in correspo
         break;
     case 8:
         x = 2;
+
         y = 1;
         moves++;
         break;
